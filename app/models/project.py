@@ -2,6 +2,7 @@ from sqlalchemy import (Column, String, Boolean, Integer, Text, Date, ForeignKey
 from sqlalchemy.orm import relationship
 from app.database import Base
 from datetime import datetime, timezone
+from . import project_skills
 
 class Project(Base):
     __tablename__ = "projects"
@@ -23,3 +24,4 @@ class Project(Base):
 
     # Relationship field.
     users = relationship("User", back_populates="projects")
+    skills = relationship("Skill", secondary=project_skills, back_populates="projects")

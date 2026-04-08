@@ -20,3 +20,4 @@ class User(Base):
 
     # Relationship field.
     projects = relationship("Project", back_populates="user", cascade="all, delete")
+    skills = relationship("Skill", back_populates="user", cascade="all, delete-orphan")
