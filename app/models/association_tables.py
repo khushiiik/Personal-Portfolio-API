@@ -8,3 +8,16 @@ project_skills = Table(
     Column("skill_id", Integer, ForeignKey("skills.id", ondelete="CASCADE")),
 )
 
+experience_skills = Table(
+    "experience_skills",
+    Base.metadata,
+    Column("experience_id", Integer, ForeignKey("experiences.id", ondelete="CASCADE")),
+    Column("skill_id", Integer, ForeignKey("skills.id", ondelete="CASCADE")),
+)
+
+users_skills = Table(
+    "users_skills",
+    Base.metadata,
+    Column("user_id", Integer, ForeignKey("users.id", ondelete="CASCADE")),
+    Column("skill_id", Integer, ForeignKey("skills.id", ondelete="CASCADE")),
+)
