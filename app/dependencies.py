@@ -12,7 +12,7 @@ load_dotenv()
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = "HS256"
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 
 
 # Dependency 1: db session.
@@ -50,3 +50,12 @@ def get_current_user(
         raise HTTPException(400, "Inactive user!")
 
     return user_email
+
+
+# Dependency 3: Validate admin.
+def require_admin(current_user: user.User = Depends(get_current_user)) -> user.User:
+    if current_user.role != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail="Admin access required!"
+        )
+    return current_user

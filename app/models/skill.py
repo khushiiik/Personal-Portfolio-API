@@ -1,7 +1,6 @@
 from sqlalchemy import Column, Integer, String, UniqueConstraint
 from sqlalchemy.orm import relationship
 from app.database import Base
-from . import project_skills, experience_skills
 
 
 class Skill(Base):
@@ -13,8 +12,8 @@ class Skill(Base):
     # Relationship field
     users = relationship("User", secondary="users_skills", back_populates="skills")
     projects = relationship(
-        "Project", secondary=project_skills, back_populates="skills"
+        "Project", secondary="project_skills", back_populates="skills"
     )
     experiences = relationship(
-        "Experience", secondary=experience_skills, back_populates="skills"
+        "Experience", secondary="experience_skills", back_populates="skills"
     )

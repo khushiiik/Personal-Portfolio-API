@@ -2,7 +2,7 @@ from sqlalchemy import Column, Integer, String, Boolean, DateTime, Enum as SAEnu
 from sqlalchemy.orm import relationship
 from app.database import Base
 from datetime import datetime, timezone
-
+import enum
 
 # Restrict role to only "user" or "admin".
 class UserRoll(str, enum.Enum):

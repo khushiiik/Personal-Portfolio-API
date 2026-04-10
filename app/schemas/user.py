@@ -17,6 +17,8 @@ class UserResponse(BaseModel):
     # For pydantic to read SQLAlchemy objects.
     model_config = ConfigDict(from_attributes=True)
 
+class UserUpdate(BaseModel):
+    name: str | None = None
 
 class Token(BaseModel):
     access_token: str

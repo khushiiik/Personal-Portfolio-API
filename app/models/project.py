@@ -2,7 +2,6 @@ from sqlalchemy import Column, String, Boolean,Date, Integer, Text, DateTime, Fo
 from sqlalchemy.orm import relationship
 from app.database import Base
 from datetime import datetime, timezone
-from . import project_skills
 
 
 class Project(Base):
@@ -30,4 +29,4 @@ class Project(Base):
 
     # Relationship field.
     user = relationship("User", back_populates="projects")
-    skills = relationship("Skill", secondary=project_skills, back_populates="projects")
+    skills = relationship("Skill", secondary="project_skills", back_populates="projects")

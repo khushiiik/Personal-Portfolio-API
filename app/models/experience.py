@@ -1,7 +1,6 @@
 from sqlalchemy import Column, Integer, String, Date, Text, Boolean, ForeignKey
 from sqlalchemy.orm import relationship
 from app.database import Base
-from . import experience_skills
 
 
 class Experience(Base):
@@ -27,5 +26,5 @@ class Experience(Base):
     # Relationship Field.
     user = relationship("User", back_populates="experiences")
     skills = relationship(
-        "Skill", secondary=experience_skills, back_populates="experiences"
+        "Skill", secondary="experience_skills", back_populates="experiences"
     )
