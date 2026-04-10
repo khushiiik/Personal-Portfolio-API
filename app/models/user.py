@@ -1,8 +1,17 @@
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, Enum as SAEnum
+from sqlalchemy import (
+    Column,
+    Integer,
+    String,
+    Boolean,
+    DateTime,
+    ForeignKey,
+    Enum as SAEnum,
+)
 from sqlalchemy.orm import relationship
 from app.database import Base
 from datetime import datetime, timezone
 import enum
+
 
 # Restrict role to only "user" or "admin".
 class UserRoll(str, enum.Enum):
@@ -29,7 +38,7 @@ class User(Base):
     projects = relationship(
         "Project", back_populates="user", cascade="all, delete-orphan"
     )
-    skills = relationship("Skill", secondary="users_skills", back_populates="users")
+    skills = relationship("Skill", back_populates="user", cascade="all, delete-orphan")
     experiences = relationship(
         "Experience", back_populates="user", cascade="all, delete-orphan"
     )
