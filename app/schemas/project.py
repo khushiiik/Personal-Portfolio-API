@@ -15,16 +15,20 @@ class ProjectCreate(BaseModel):
     skills: List[SkillCreate] = Field(default_factory=list)
 
     @model_validator(mode="after")
-    def validate_dates(self):
+    def validate_dates(cls, values):
         """Ensure valid project date logic."""
 
-        if self.is_current and self.end_date:
+        if values.is_current and values.end_date:
             raise ValueError("Current project cannot have end_date!")
 
-        if self.start_date and self.end_date and self.end_date < self.start_date:
+        if (
+            values.start_date
+            and values.end_date
+            and values.end_date < values.start_date
+        ):
             raise ValueError("end_date must be after start_date!")
 
-        return self
+        return values
 
 
 class ProjectUpdate(BaseModel):
@@ -35,6 +39,20 @@ class ProjectUpdate(BaseModel):
     start_date: date | None = None
     end_date: date | None = None
     skills: List[SkillUpdate] | None = None
+
+    @model_validator(mode="after")
+    def validate_dates(cls, values):
+        if values.is_current is True and values.end_date is not None:
+            raise ValueError("Current project cannot have end_date!")
+
+        if (
+            values.start_date is not None
+            and values.end_date is not None
+            and values.end_date < values.start_date
+        ):
+            raise ValueError("end_date must be after start_date!")
+
+        return values
 
 
 class ProjectResponse(BaseModel):
