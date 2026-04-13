@@ -21,16 +21,3 @@ class SkillResponse(BaseModel):
 
     # For pydantic to read SQLAlchemy objects.
     model_config = ConfigDict(from_attributes=True)
-
-
-class SkillUpdate(BaseModel):
-    name: str | None = None
-
-    @field_validator("name")
-    def normalize_name(cls, value):
-        """Clean and normalize skill name."""
-
-        if value:
-            return value.strip().lower()
-
-        return value

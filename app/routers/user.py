@@ -1,51 +1,27 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
+from typing import List
 from sqlalchemy.orm import Session
 from app import models, schemas
-from app.dependencies import get_current_user, get_db
+from app.dependencies import get_db
 
-router = APIRouter(prefix="/user", tags=["User"])
-
-
-@router.get("/", response_model=schemas.user.UserResponse)
-def get_user(
-    db: Session = Depends(get_db),
-    current_user: models.user.User = Depends(get_current_user),
-):
-    user = (
-        db.query(models.user.User)
-        .filter(models.user.User.id == current_user.id)
-        .first()
-    )
-
-    if not user:
-        raise HTTPException(404, "User not found!")
-
-    if user.id != current_user.id:
-        if current_user.role != "admin":
-            raise HTTPException(404, "User not found!")
-
-    return user
+router = APIRouter(prefix="/users", tags=["Users"])
 
 
-@router.patch("/{user_id}", response_model=schemas.user.UserResponse)
-def update_user_name(
-    user_id: int,
-    data: schemas.user.UserUpdate,
-    db: Session = Depends(get_db),
-    current_user: models.user.User = Depends(get_current_user),
-):
-    user = db.query(models.user.User).filter(models.user.User.id == user_id).first()
+@router.get("/", response_model=List[schemas.user.UserPublic])
+def get_users(db: Session = Depends(get_db)):
 
-    if not user:
-        raise HTTPException(404, "User not found!")
+    profile = db.query(models.user.User).filter_by(is_active=True).all()
 
-    if user.id != current_user.id:
-        raise HTTPException(404, "User not found!")
+    return profile
 
-    update_name = data.model_dump(exclude_none=True)
-    for field, value in update_name.items():
-        setattr(user, field, value)
 
-        db.commit()
-        db.refresh(user)
-        return user
+@router.get("/{user_id}", response_model=schemas.profile.UserProfile)
+def get_user_details(user_id: int, db: Session = Depends(get_db)):
+    profile = db.query(models.user.User).filter_by(id=user_id).first()
+
+    if not profile:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Profile not found!"
+        )
+
+    return profile

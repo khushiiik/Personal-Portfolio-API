@@ -1,7 +1,8 @@
 from pydantic import ConfigDict, Field, BaseModel, model_validator
 from typing import List
-from .skill import SkillResponse, SkillCreate, SkillUpdate
+from .skill import SkillResponse, SkillCreate
 from datetime import date
+from services import validate_dates
 
 
 # Experience Schemas.
@@ -16,14 +17,7 @@ class ExperienceCreate(BaseModel):
 
     @model_validator(mode="after")
     def validate_dates(self):
-        """Ensure valid experience date logic."""
-
-        if self.is_current and self.end_date:
-            raise ValueError("Current experience cannot have end_date!")
-
-        if self.start_date and self.end_date and self.end_date < self.start_date:
-            raise ValueError("end_date must be after start_date!")
-
+        validate_dates(self.start_date, self.end_date, self.is_current)
         return self
 
 
@@ -33,8 +27,27 @@ class ExperienceUpdate(BaseModel):
     description: str | None = None
     start_date: date | None = None
     end_date: date | None = None
-    is_current: bool
-    skills: List[SkillUpdate] | None = None
+    is_current: bool | None = None
+
+    @model_validator(mode="after")
+    def validate_dates(self):
+        if any(
+            [
+                self.start_date is not None,
+                self.end_date is not None,
+                self.is_current is not None,
+            ]
+        ):
+            validate_dates(self.start_date, self.end_date, self.is_current)
+        return self
+
+
+class ExperienceSkillAdd(BaseModel):
+    skills: list[str]
+
+
+class ExperienceSkillRemove(BaseModel):
+    skills: list[str]
 
 
 class ExperienceResponse(BaseModel):

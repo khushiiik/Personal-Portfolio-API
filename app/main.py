@@ -12,8 +12,10 @@ app = FastAPI(
 
 app.include_router(routers.auth.router)
 app.include_router(routers.user.router)
+app.include_router(routers.user_account.router)
 app.include_router(routers.skills.router)
 app.include_router(routers.project.router)
+app.include_router(routers.experience.router)
 
 
 @app.get("/")

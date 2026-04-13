@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List
 from app import models, schemas
-from app.dependencies import get_db, get_current_user, require_admin
+from app.dependencies import get_db, get_current_user
 
 router = APIRouter(prefix="/skills", tags=["Skills"])
 
@@ -49,19 +49,15 @@ def create_skills(
     return skill
 
 
-@router.patch("/{skill_id}", response_model=schemas.skill.SkillResponse)
-def update_skill(
+@router.delete("/{skill_id}")
+def remove_skill(
     skill_id: int,
-    data: schemas.skill.SkillUpdate,
     db: Session = Depends(get_db),
     current_user: models.user.User = Depends(get_current_user),
 ):
     skill = (
         db.query(models.skill.Skill)
-        .filter(
-            models.skill.Skill.id == skill_id,
-            models.skill.Skill.user_id == current_user.id,
-        )
+        .filter_by(id=skill_id, user_id=current_user.id)
         .first()
     )
 
@@ -70,12 +66,7 @@ def update_skill(
             status_code=status.HTTP_404_NOT_FOUND, detail="Skill not found!"
         )
 
-    update_data = data.model_dump(exclude_none=True)
-
-    for field, value in update_data.items():
-        setattr(skill, field, value)
-
+    db.delete(skill)
     db.commit()
-    db.refresh(skill)
 
-    return skill
+    return {"message": f"{skill.name} is deleted!"}

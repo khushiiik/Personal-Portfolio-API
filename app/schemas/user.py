@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, EmailStr, ConfigDict
+from pydantic import BaseModel, Field, EmailStr, ConfigDict, field_validator
 
 
 # Auth Schemas.
@@ -21,7 +21,20 @@ class UserResponse(BaseModel):
 class UserUpdate(BaseModel):
     name: str | None = None
 
+    @field_validator("name")
+    def validate_name(cls, value):
+        if value is not None and not value.strip():
+            raise ValueError("Name cannot be empty")
+        return value.strip() if value else value
+
 
 class Token(BaseModel):
     access_token: str
     token_type: str
+
+
+class UserPublic(BaseModel):
+    id: int
+    name: str
+
+    model_config = ConfigDict(from_attributes=True)

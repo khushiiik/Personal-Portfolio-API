@@ -1,7 +1,8 @@
 from pydantic import ConfigDict, BaseModel, model_validator, Field
 from typing import List
 from datetime import date
-from .skill import SkillResponse, SkillCreate, SkillUpdate
+from .skill import SkillResponse, SkillCreate
+from services import validate_dates
 
 
 # Project Schemas.
@@ -15,20 +16,9 @@ class ProjectCreate(BaseModel):
     skills: List[SkillCreate] = Field(default_factory=list)
 
     @model_validator(mode="after")
-    def validate_dates(cls, values):
-        """Ensure valid project date logic."""
-
-        if values.is_current and values.end_date:
-            raise ValueError("Current project cannot have end_date!")
-
-        if (
-            values.start_date
-            and values.end_date
-            and values.end_date < values.start_date
-        ):
-            raise ValueError("end_date must be after start_date!")
-
-        return values
+    def validate_dates(self):
+        validate_dates(self.start_date, self.end_date, self.is_current)
+        return self
 
 
 class ProjectUpdate(BaseModel):
@@ -38,21 +28,26 @@ class ProjectUpdate(BaseModel):
     is_current: bool | None = None
     start_date: date | None = None
     end_date: date | None = None
-    skills: List[SkillUpdate] | None = None
 
     @model_validator(mode="after")
-    def validate_dates(cls, values):
-        if values.is_current is True and values.end_date is not None:
-            raise ValueError("Current project cannot have end_date!")
-
-        if (
-            values.start_date is not None
-            and values.end_date is not None
-            and values.end_date < values.start_date
+    def validate_dates(self):
+        if any(
+            [
+                self.start_date is not None,
+                self.end_date is not None,
+                self.is_current is not None,
+            ]
         ):
-            raise ValueError("end_date must be after start_date!")
+            validate_dates(self.start_date, self.end_date, self.is_current)
+        return self
 
-        return values
+
+class ProjectSkillAdd(BaseModel):
+    skills: list[str]
+
+
+class ProjectSkillRemove(BaseModel):
+    skills: list[str]
 
 
 class ProjectResponse(BaseModel):

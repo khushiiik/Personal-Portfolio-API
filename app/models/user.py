@@ -4,7 +4,6 @@ from sqlalchemy import (
     String,
     Boolean,
     DateTime,
-    ForeignKey,
     Enum as SAEnum,
 )
 from sqlalchemy.orm import relationship
