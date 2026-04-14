@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from typing import List
 from app import models, schemas
 from app.dependencies import get_db, get_current_user
-from services import (
+from app.services import (
     get_or_create_skill,
     delete_skill_if_unused,
     add_skills_to_model,

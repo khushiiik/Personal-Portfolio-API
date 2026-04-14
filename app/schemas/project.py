@@ -2,7 +2,7 @@ from pydantic import ConfigDict, BaseModel, model_validator, Field
 from typing import List
 from datetime import date
 from .skill import SkillResponse, SkillCreate
-from services import validate_dates
+from app.services import validate_dates
 
 
 # Project Schemas.
